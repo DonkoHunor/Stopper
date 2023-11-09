@@ -20,7 +20,11 @@ namespace Stopper
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	/// Stopwatch osztályt használva a megoldás
+	///					|
+	///					|
+	///					V
+	/*public partial class MainWindow : Window
 	{
 		DispatcherTimer timer = new DispatcherTimer();
 		Stopwatch stopwatch = new Stopwatch();
@@ -74,7 +78,73 @@ namespace Stopper
 			{
 				stopwatch.Reset();
 				korIdoListBox.Items.Clear();
-				idoLabel.Content = String.Format("{0:00}:{1:00}:{2:00}", 0, 0, 0 / 10);
+				idoLabel.Content = String.Format("{0:00}:{1:00}:{2:00}", 0, 0, 0);
+			}
+		}
+	}*/
+	public partial class MainWindow : Window
+	{
+		DispatcherTimer timer = new DispatcherTimer();
+		TimeSpan eltelt = TimeSpan.Zero;
+		DateTime inditas = DateTime.Now;
+		TimeSpan eddig = TimeSpan.Zero; 
+		bool fut = false;
+		string currentTime = string.Empty;
+
+		public MainWindow()
+		{
+			InitializeComponent();
+			timer.Tick += new EventHandler(dt_Tick);
+			timer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+			idoLabel.Content = String.Format("{0:00}:{1:00}:{2:00}", 0, 0, 0 / 10);
+		}
+
+		private void dt_Tick(object? sender, EventArgs e)
+		{
+			eltelt = DateTime.Now - inditas + eddig; 
+			if (fut)
+			{
+				TimeSpan timeSpan = eltelt;
+				currentTime = String.Format("{0:00}:{1:00}:{2:00}",
+				timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds / 10);
+				idoLabel.Content = currentTime;
+			}
+		}
+
+		private void startBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (fut)
+			{
+				timer.Stop();
+				eddig = eltelt;
+				startBtn.Content = "Start";
+				resetBtn.Content = "Reset";
+				fut = false;
+			}
+			else
+			{
+				timer.Start();
+				fut = true;
+				inditas = DateTime.Now;
+				startBtn.Content = "Stop";
+				resetBtn.Content = "Köridő";
+			}
+
+
+		}
+
+		private void resetBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (fut)
+			{
+				korIdoListBox.Items.Add(currentTime);
+			}
+			else
+			{
+				eltelt = TimeSpan.Zero;
+				eddig = TimeSpan.Zero;
+				korIdoListBox.Items.Clear();
+				idoLabel.Content = String.Format("{0:00}:{1:00}:{2:00}", 0, 0, 0);
 			}
 		}
 	}
